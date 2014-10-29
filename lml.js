@@ -51,18 +51,15 @@
 		}
 	}
 
-	var addLazyCss = function(css, callback) {
+	var addLazyCss = function( css ) {
 		var style = doc.createElement('style');
 		style.type='text/css';
 		if (style.styleSheet) {
 			style.styleSheet.cssText = css;
 		}else{
-			style.innerHTML=css;
+			style.innerHTML = css;
 		}
 		doc.getElementsByTagName('head')[0].appendChild(style);
-		callback = callback || function(){
-			deferred.promise();
-		}
 	}
 
 	/**
