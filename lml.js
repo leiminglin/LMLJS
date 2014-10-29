@@ -73,8 +73,33 @@
 		deferred.promise();
 	});
 
+	var loadJs = function( src, callback, script, stag ) {
+		script = doc.createElement('script'),
+		stag = doc.getElementsByTagName('script')[0];
+		script.async=1;
+		script.src=src;
+		try{
+			stag.parentNode.insertBefore( script, stag );
+			callback = callback || function(){
+				deferred.promise();
+			};
+			if( window.addEventListener ){
+				script.addEventListener( 'load', callback, false );
+			}else if( window.attachEvent ){
+				script.onreadystatechange = function(){
+					if(this.readyState.match(/loaded|complete/i)){
+						callback();
+					}
+				}
+			}
+		}catch(e){
+			callback();
+		}
+	};
+
 	var lml = {};
 	lml.deferred = deferred;
+	lml.loadJs = loadJs;
 	win.lml = lml;
 	
 })(window, document);
