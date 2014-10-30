@@ -34,6 +34,13 @@ $.fn.lmlScroll = function(o){
 	var panel = o.panel||undefined;
 	var sidebar_selector = o.sideSelector||undefined;
 	var panel_selector = o.panelSelector||undefined;
+	var easing = o.easing||undefined;
+	var animate_param2;
+	if( easing ){
+		animate_param2 = {easing:easing, duration:speed};
+	}else{
+		animate_param2 = speed;
+	}
 	
 	if( sidebar_selector ){
 		if( sidebar_selector.left ){
@@ -87,14 +94,16 @@ $.fn.lmlScroll = function(o){
 			screens.count = id;
 			panel_element.children()
 			.eq(id-1)
-			.css({"background":panel_color})
+			.addClass('current')
 			.siblings()
-			.css({"background":"#FFF"});
-			items.stop(true,true).animate({"left" : -1*id*w+"px"}, speed).queue(function(){
+			.removeClass('current');
+			items.stop(true,true)
+			.animate({"left" : -1*id*w+"px"}, animate_param2)
+			.queue(function(){
 				th.start();
 			});
 		});
-	}if(panel){
+	}else if(panel){
 		var psize = panel.size.match(/\d+/)||14;
 		var gap = 2;
 		var margin_width = screens.total>1?(screens.total-1)*gap:0;
@@ -119,7 +128,9 @@ $.fn.lmlScroll = function(o){
 				.css({"background":panel_color})
 				.siblings()
 				.css({"background":"#FFF"});
-				items.stop(true,true).animate({"left" : -1*id*w+"px"}, speed).queue(function(){
+				items.stop(true,true)
+				.animate({"left" : -1*id*w+"px"}, animate_param2)
+				.queue(function(){
 					th.start();
 				});
 			});
@@ -136,7 +147,8 @@ $.fn.lmlScroll = function(o){
 		});
 		$(this).append(panel_element);
 	}
-	$(this).css({"height":height,"width":width,"overflow":"hidden","margin":"0 auto","position":"relative"});
+	$(this).css({"height":height,"width":width,"overflow":"hidden",
+		"margin":"0 auto","position":"relative"});
 	items.css({"position":"absolute","height":height,"width":"20000em","left":-1*w+"px" });
 	item.css({"overflow":"hidden","height":height,"width":width,"float":"left"});
 	item.children().css({"float":"left"});
@@ -164,10 +176,18 @@ $.fn.lmlScroll = function(o){
 				items.css("left",-1*screens.total*w+"px");
 			}
 		}
-		items.animate({"left" : left}, speed)
+		items.animate({"left" : left}, animate_param2)
 		.queue("fx", function(){
 			queue();
-			panel_element.children().eq(i-1).css({"background":panel_color}).siblings().css({"background":"#FFF"});
+			if( panel_selector ){
+				panel_element.children()
+				.eq(i-1).addClass('current')
+				.siblings().removeClass('current');
+			}else if( panel ){
+				panel_element.children().eq(i-1)
+				.css({"background":panel_color})
+				.siblings().css({"background":"#FFF"});
+			}
 			items.dequeue();
 		});
 		this.start(dire);
