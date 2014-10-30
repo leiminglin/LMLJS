@@ -137,7 +137,5 @@ $.fn.lmlScroll = function(o){
 	this.start = function(dire){
 		timer.run = setTimeout(function(){th.run(dire||direction)}, timeout);
 	}
-	setTimeout(function(){
-		th.run();
-	}, timeout);
+	timer.run = this.start();
 }
