@@ -1,4 +1,5 @@
-$ && $.fn.lmlScroll = function(o){
+if($)
+$.fn.lmlScroll = function(o){
 	var items = $(this).children(":eq(0)");
 	var item = items.children();
 	var screens = {
@@ -33,7 +34,11 @@ $ && $.fn.lmlScroll = function(o){
 	var panel = o.panel||undefined;
 	if(sidebar){
 		side_width = sidebar.width.match(/\d+/)||50;
-		var s = $("<div/>").css({"width":side_width,"height":height,"position":"absolute","opacity":0.5,"background":"gray","z-index":9,"line-height":height,"text-align":"center","font-weight":"bold","color":"#000"}).append("<").mouseover(function(){
+		var s = $("<div/>")
+			.css({"width":side_width,"height":height,"position":"absolute",
+				"opacity":0.5,"background":"gray","z-index":9,"line-height":height,
+				"text-align":"center","font-weight":"bold","color":"#000"})
+			.append("<").mouseover(function(){
 			$(this).css({"opacity":0.9,"color":"#FFF"});
 		}).mouseout(function(){
 			$(this).css({"opacity":0.5,"color":"#000"});
@@ -57,14 +62,25 @@ $ && $.fn.lmlScroll = function(o){
 		var margin_width = screens.total>1?(screens.total-1)*gap:0;
 		var pwidth = screens.total*psize + margin_width;
 		var panel_color = panel.color||"red";
-		panel_element = $("<div/>").css({"width":pwidth,"height":psize,"left":(w-pwidth)/2+"px","position":"absolute","top":h-psize-5+"px"}).append(function(){
-			var x = $("<div/>").css({"border":"1px solid #333","width":psize-2+"px","height":psize-2+"px","float":"left","opacity":0.5,"background":"#FFF"}).click(function(){
+		panel_element = $("<div/>")
+		.css({"width":pwidth,"height":psize,"left":(w-pwidth)/2+"px",
+			"position":"absolute","top":h-psize-5+"px"})
+		.append(function(){
+			var x = $("<div/>")
+			.css({"border":"1px solid #333","width":psize-2+"px",
+				"height":psize-2+"px","border-radius":psize-2+"px",
+				"font-size":"0px","float":"left","opacity":0.5,"background":"#FFF"})
+			.click(function(){
 				var id = $(this).attr("v");
 				if(timer.run){
 					clearTimeout(timer.run);
 				}
 				screens.count = id;
-				panel_element.children().eq(id-1).css({"background":panel_color}).siblings().css({"background":"#FFF"});
+				panel_element.children()
+				.eq(id-1)
+				.css({"background":panel_color})
+				.siblings()
+				.css({"background":"#FFF"});
 				items.stop(true,true).animate({"left" : -1*id*w+"px"}, speed).queue(function(){
 					th.start();
 				});
@@ -116,10 +132,10 @@ $ && $.fn.lmlScroll = function(o){
 			panel_element.children().eq(i-1).css({"background":panel_color}).siblings().css({"background":"#FFF"});
 			items.dequeue();
 		});
-		this.start = function(){
-			timer.run = setTimeout(function(){th.run(d)}, timeout);
-		}
-		this.start();
+		this.start(dire);
+	}
+	this.start = function(dire){
+		timer.run = setTimeout(function(){th.run(dire||direction)}, timeout);
 	}
 	setTimeout(function(){
 		th.run();
