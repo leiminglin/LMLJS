@@ -26,12 +26,10 @@
 	 * Lazy load img
 	 */
 	deferred.then(function(){
-		var i,x,m = doc.getElementsByTagName('IMG');
-		for(i in m){
-			if( ( (typeof(m[i])).toString().match(/object/i) )
-					&&m[i].getAttribute('osrc')
-					&&(x=m[i].getAttribute('osrc')) ){
-				m[i].setAttribute('src',x);
+		var i, length, src, m = doc.getElementsByTagName('IMG');
+		for(i=0,j=m.length; i<j; i++){
+			if( m[i].hasAttribute('osrc') && (src=m[i].getAttribute('osrc')) ){
+				m[i].setAttribute('src',src);
 			}
 		}
 		deferred.promise();
