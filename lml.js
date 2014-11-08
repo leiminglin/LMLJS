@@ -58,7 +58,7 @@
 			style.innerHTML = css;
 		}
 		doc.getElementsByTagName('head')[0].appendChild(style);
-	}
+	};
 
 	/**
 	 * Lazy load CSS
