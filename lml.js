@@ -28,8 +28,14 @@
 	deferred.then(function(){
 		var i, length, src, m = doc.getElementsByTagName('IMG');
 		for(i=0,j=m.length; i<j; i++){
-			if( m[i].hasAttribute('osrc') && (src=m[i].getAttribute('osrc')) ){
+			if( src=m[i].getAttribute('osrc') ){
 				m[i].setAttribute('src',src);
+				m[i].onerror=function(){
+					if( src=this.getAttribute('osrc-bak') ){
+						this.setAttribute('src',src);
+						this.onerror=null;
+					}
+				};
 			}
 		}
 		deferred.promise();
