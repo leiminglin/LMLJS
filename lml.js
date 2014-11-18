@@ -95,6 +95,10 @@
 						callback();
 					}
 				}
+			}else{
+				script.onload = function(){
+					callback();
+				}
 			}
 		}catch(e){
 			callback();
