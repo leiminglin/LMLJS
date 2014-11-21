@@ -1,3 +1,14 @@
+/**
+ * LMLJS Framework
+ * Copyright (c) 2014 http://lmlphp.com All rights reserved.
+ * Licensed ( http://mit-license.org/ )
+ * Author: leiminglin <leiminglin@126.com>
+ * 
+ * A lovely javascript framework.
+ * 
+ * $id: $
+ * 
+ */
 $.fn.lmlFloat = function(setting){
 	var t = setting||{},
 	top = t.top||0,
