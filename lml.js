@@ -65,7 +65,7 @@
 		};
 		var loadImg = function(){
 			if( count >= m.length ){
-				/*ÒÆ³ıÊÂ¼ş*/
+				/* remove event */
 				if( window.addEventListener ){
 					document.removeEventListener( 'scroll', loadImg, false );
 				}else if( window.attachEvent ){
