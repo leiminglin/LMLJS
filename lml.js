@@ -22,22 +22,85 @@
 		deferred.queue.push(e);
 	};
 
+	function getElementViewTop(element){
+		var actualTop = element.offsetTop
+			,offsetParentElement = element.offsetParent;
+		if( offsetParentElement == null && element.parentNode ){
+			/* when style display is none */
+			var parentNode = element.parentNode;
+			while( offsetParentElement == null ){
+				offsetParentElement = parentNode.offsetParent;
+				parentNode = parentNode.parentNode;
+				if( !parentNode ){
+					break;
+				}
+			}
+		}
+		while ( offsetParentElement !== null /* document.body */ ){
+			actualTop += (offsetParentElement.offsetTop+offsetParentElement.clientTop);
+			offsetParentElement = offsetParentElement.offsetParent;
+		}
+		var elementScrollTop = document.documentElement.scrollTop 
+			? document.documentElement.scrollTop : document.body.scrollTop; 
+		return actualTop - elementScrollTop;
+	}
+
+	function getViewport(){
+		if( document.compatMode == "BackCompat" ){
+			return { width:document.body.clientWidth, 
+				height:document.body.clientHeight }
+		}else{
+			return { width:document.documentElement.clientWidth, 
+				height:document.documentElement.clientHeight }
+		}
+	}
+
 	/**
 	 * Lazy load img
 	 */
 	deferred.then(function(){
-		var i, length, src, m = doc.getElementsByTagName('IMG');
-		for(i=0,j=m.length; i<j; i++){
-			if( src=m[i].getAttribute('osrc') ){
-				m[i].setAttribute('src',src);
-				m[i].onerror=function(){
-					if( src=this.getAttribute('osrc-bak') ){
-						this.setAttribute('src',src);
-						this.onerror=null;
-					}
-				};
+		var i, length, src, m = doc.getElementsByTagName('IMG'),viewport=getViewport(),count=0;
+		window.onresize = function(){
+			viewport = getViewport();
+		};
+		var loadImg = function(){
+			if( count >= m.length ){
+				/*ÒÆ³ýÊÂ¼þ*/
+				if( window.addEventListener ){
+					document.removeEventListener( 'scroll', loadImg, false );
+				}else if( window.attachEvent ){
+					window.detachEvent(event, loadImg); 
+				}
+				return;
 			}
+			for(i=0,j=m.length; i<j; i++){
+				if( m[i].getAttribute('src') ){
+					continue;
+				}
+				var viewtop = getElementViewTop(m[i]);
+				if( viewtop>=0 && viewtop < viewport.height && (src=m[i].getAttribute('osrc')) ){
+					m[i].setAttribute('src',src);
+					m[i].onerror=function(){
+						if( src=this.getAttribute('osrc-bak') ){
+							this.setAttribute('src',src);
+							this.onerror=null;
+						}
+					};
+					m[i].onload=function(){
+						count++;
+					}
+				}
+			}
+		};
+		
+		if( window.addEventListener ){
+			document.addEventListener( 'scroll', loadImg, false );
+		}else if( window.attachEvent ){
+			window.attachEvent("onscroll", function(){
+				loadImg();
+			}); 
 		}
+		loadImg();
 		deferred.promise();
 	});
 
