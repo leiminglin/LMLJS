@@ -59,7 +59,8 @@
 	 * Lazy load img
 	 */
 	deferred.then(function(){
-		var i, length, src, m = doc.getElementsByTagName('IMG'),viewport=getViewport(),count=0;
+		var i, length, src, m = doc.getElementsByTagName('IMG'), 
+			viewport=getViewport(), count=0;
 		window.onresize = function(){
 			viewport = getViewport();
 		};
@@ -77,8 +78,10 @@
 				if( m[i].getAttribute('src') ){
 					continue;
 				}
-				var viewtop = getElementViewTop(m[i]);
-				if( viewtop>=0 && viewtop < viewport.height && (src=m[i].getAttribute('osrc')) ){
+				var viewtop = getElementViewTop(m[i])
+					,imgHeight = m[i].getAttribute('height')||0;
+				if( viewtop>=-imgHeight && viewtop < viewport.height 
+					&& (src=m[i].getAttribute('osrc')) ){
 					m[i].setAttribute('src',src);
 					m[i].onerror=function(){
 						if( src=this.getAttribute('osrc-bak') ){
@@ -86,7 +89,7 @@
 							this.onerror=null;
 						}
 					};
-					m[i].onload=function(){
+					m[i].onload = function(){
 						count++;
 					}
 				}
@@ -143,8 +146,8 @@
 	var loadJs = function( src, callback, script, stag ) {
 		script = doc.createElement('script'),
 		stag = doc.getElementsByTagName('script')[0];
-		script.async=1;
-		script.src=src;
+		script.async = 1;
+		script.src = src;
 		try{
 			stag.parentNode.insertBefore( script, stag );
 			callback = callback || function(){
