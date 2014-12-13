@@ -99,9 +99,7 @@
 		if( window.addEventListener ){
 			document.addEventListener( 'scroll', loadImg, false );
 		}else if( window.attachEvent ){
-			window.attachEvent("onscroll", function(){
-				loadImg();
-			}); 
+			window.attachEvent("onscroll", loadImg); 
 		}
 		loadImg();
 		deferred.promise();
