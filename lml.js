@@ -140,6 +140,21 @@
 		}
 		deferred.promise();
 	});
+	
+	/**
+	 * Lazy load HTML
+	 */
+	deferred.then( function(){
+		var e = document.getElementsByClassName('lazyHtml');
+		for( var i=0; i<e.length; i++ ) {
+			if(e[i].tagName == 'TEXTAREA'){
+				var wrapdiv = document.createElement('DIV');
+				wrapdiv.innerHTML = e[i].value;
+				e[i].parentNode.insertBefore(wrapdiv, e[i]);
+			}
+		}
+		deferred.promise();
+	});
 
 	var loadJs = function( src, callback, script, stag ) {
 		script = doc.createElement('script'),
