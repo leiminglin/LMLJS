@@ -40,18 +40,26 @@
 			actualTop += (offsetParentElement.offsetTop+offsetParentElement.clientTop);
 			offsetParentElement = offsetParentElement.offsetParent;
 		}
-		var elementScrollTop = document.documentElement.scrollTop 
-			? document.documentElement.scrollTop : document.body.scrollTop; 
-		return actualTop - elementScrollTop;
+
+		var pageScrollTop;
+		if ( typeof win.pageYOffset === 'number' ) {
+			pageScrollTop = win.pageYOffset;
+		} else {
+			docElement = (doc.compatMode && doc.compatMode === 'CSS1Compat') 
+			? doc.documentElement : doc.body;
+			pageScrollTop = docElement.scrollTop;
+		}
+
+		return actualTop - pageScrollTop;
 	}
 
 	function getViewport(){
-		if( document.compatMode == "BackCompat" ){
-			return { width:document.body.clientWidth, 
-				height:document.body.clientHeight }
+		if( doc.compatMode && doc.compatMode == "BackCompat" ){
+			return { width : doc.body.clientWidth, 
+				height : doc.body.clientHeight }
 		}else{
-			return { width:document.documentElement.clientWidth, 
-				height:document.documentElement.clientHeight }
+			return { width : doc.documentElement.clientWidth, 
+				height : doc.documentElement.clientHeight }
 		}
 	}
 
@@ -68,7 +76,7 @@
 			if( count >= m.length ){
 				/* remove event */
 				if( window.addEventListener ){
-					document.removeEventListener( 'scroll', loadImg, false );
+					doc.removeEventListener( 'scroll', loadImg, false );
 				}else if( window.attachEvent ){
 					window.detachEvent(event, loadImg); 
 				}
@@ -97,7 +105,7 @@
 		};
 		
 		if( window.addEventListener ){
-			document.addEventListener( 'scroll', loadImg, false );
+			doc.addEventListener( 'scroll', loadImg, false );
 		}else if( window.attachEvent ){
 			window.attachEvent("onscroll", loadImg); 
 		}
@@ -105,8 +113,8 @@
 		deferred.promise();
 	});
 
-	if( typeof document.getElementsByClassName != 'function' ){
-		document.getElementsByClassName = function( classname ){
+	if( typeof doc.getElementsByClassName != 'function' ){
+		doc.getElementsByClassName = function( classname ){
 			var d = doc, e = d.getElementsByTagName('*'), 
 				c = new RegExp('\\b'+classname+'\\b'), r = [];
 			for( var i=0,l=e.length; i<l; i++ ){
@@ -134,7 +142,7 @@
 	 * Lazy load CSS
 	 */
 	deferred.then( function(){
-		var e = document.getElementsByClassName('lazyCss');
+		var e = doc.getElementsByClassName('lazyCss');
 		for( var i=0; i<e.length; i++ ) {
 			addLazyCss( e[i].value || e[i].innerHTML );
 		}
@@ -145,10 +153,10 @@
 	 * Lazy load HTML
 	 */
 	deferred.then( function(){
-		var e = document.getElementsByClassName('lazyHtml');
+		var e = doc.getElementsByClassName('lazyHtml');
 		for( var i=0; i<e.length; i++ ) {
 			if(e[i].tagName == 'TEXTAREA'){
-				var wrapdiv = document.createElement('DIV');
+				var wrapdiv = doc.createElement('DIV');
 				wrapdiv.innerHTML = e[i].value;
 				e[i].parentNode.insertBefore(wrapdiv, e[i]);
 			}
