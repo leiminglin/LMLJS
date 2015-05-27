@@ -63,50 +63,55 @@ function getWindowViewport() {
 var left = document.getElementsByClassName('left')[0];
 var right = document.getElementsByClassName('right')[0];
 var rightOriginOffsetTop = parseInt(getElementOffsetTop(right));
-var leftHeight = parseInt(getEleStyle(left, 'height').match(/\d+/));
-var rightHeight = parseInt(getEleStyle(right, 'height').match(/\d+/));
+var leftHeight, rightHeight;
 
-if(leftHeight > rightHeight){
-	var rightFloat = function(){
-		var pageScrollTop = parseInt(getPageScrollOffset().y);
-		var viewportHeight = parseInt(getWindowViewport().height);
-		var leftOffsetTop = parseInt(getElementOffsetTop(left));
-		var rightBoxOffsetTop = parseInt(getElementOffsetTop(right));
-		var rightBoxMarginTop = parseInt(getEleStyle(right, 'margin-top').match(/\d+/));
-		var maxMarginTopVal = rightHeight + rightBoxOffsetTop - leftOffsetTop - leftHeight; 
+var rightFloat = function(){
+	leftHeight = left.offsetHeight;
+	rightHeight = right.offsetHeight;
+	if(leftHeight <= rightHeight){
+		return;
+	}
+	var pageScrollTop = parseInt(getPageScrollOffset().y);
+	var viewportHeight = parseInt(getWindowViewport().height);
+	var leftOffsetTop = parseInt(getElementOffsetTop(left));
+	var rightBoxOffsetTop = parseInt(getElementOffsetTop(right));
+	var rightBoxMarginTop = parseInt(right.style.marginTop.match(/\d+/));
+	var maxMarginTopVal = rightHeight + rightBoxOffsetTop - leftOffsetTop - leftHeight; 
 
-		if(maxMarginTopVal > 0){
-			var startBack = rightBoxOffsetTop - pageScrollTop;
-			if(startBack > 0){
-				right.style.cssText = "margin-top:" + (pageScrollTop - rightOriginOffsetTop) + 'px';
+	if(maxMarginTopVal > 0){
+		var startBack = rightBoxOffsetTop - pageScrollTop;
+		if(startBack > 0){
+			right.style.cssText = "margin-top:" + (pageScrollTop - rightOriginOffsetTop) + 'px';
+		}
+		return;
+	}
+
+	var startFloatDownVal = pageScrollTop + viewportHeight 
+		- rightOriginOffsetTop - rightHeight;
+	if(startFloatDownVal >= 0){
+		if(rightBoxMarginTop >= startFloatDownVal){
+			if(rightBoxOffsetTop > pageScrollTop && rightBoxOffsetTop > rightOriginOffsetTop){
+				var temp = pageScrollTop - rightOriginOffsetTop;
+				right.style.cssText = "margin-top:"+ (temp>0?temp:0) +'px';
 			}
 			return;
 		}
-
-		var startFloatDownVal = pageScrollTop + viewportHeight 
-			- rightOriginOffsetTop - rightHeight;
-		if(startFloatDownVal >= 0){
-			if(rightBoxMarginTop >= startFloatDownVal){
-				if(rightBoxOffsetTop > pageScrollTop && rightBoxOffsetTop > rightOriginOffsetTop){
-					var temp = pageScrollTop - rightOriginOffsetTop;
-					right.style.cssText = "margin-top:"+ (temp>0?temp:0) +'px';
-				}
-				return;
-			}
-			right.style.cssText = "margin-top:"+startFloatDownVal+'px';
-		}
-
-		if(rightBoxOffsetTop > pageScrollTop && rightBoxOffsetTop > rightOriginOffsetTop){
-			var temp = pageScrollTop - rightOriginOffsetTop;
-			right.style.cssText = "margin-top:"+ (temp>0?temp:0) +'px';
-		}
-	};
-	
-	if( window.addEventListener ){
-		document.addEventListener( 'scroll', rightFloat, false );
-	}else if( window.attachEvent ){
-		window.attachEvent("onscroll", rightFloat); 
+		var pos = startFloatDownVal >= (leftHeight + leftOffsetTop - rightHeight - rightOriginOffsetTop) 
+			? (leftHeight + leftOffsetTop  - rightHeight - rightOriginOffsetTop) : startFloatDownVal;
+		right.style.cssText = "margin-top:" + pos + 'px';
 	}
+
+	if(rightBoxOffsetTop > pageScrollTop && rightBoxOffsetTop > rightOriginOffsetTop){
+		var temp = pageScrollTop - rightOriginOffsetTop;
+		right.style.cssText = "margin-top:"+ (temp>0?temp:0) +'px';
+	}
+};
+
+if( window.addEventListener ){
+	document.addEventListener( 'scroll', rightFloat, false );
+}else if( window.attachEvent ){
+	window.attachEvent("onscroll", rightFloat); 
 }
+
 
 })();
