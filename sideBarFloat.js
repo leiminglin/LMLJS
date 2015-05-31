@@ -68,11 +68,11 @@ var leftHeight, rightHeight;
 var rightFloat = function(){
 	leftHeight = left.offsetHeight;
 	rightHeight = right.offsetHeight;
-	if(leftHeight <= rightHeight){
+	var viewportHeight = parseInt(getWindowViewport().height);
+	if(leftHeight <= rightHeight || leftHeight < viewportHeight){
 		return;
 	}
 	var pageScrollTop = parseInt(getPageScrollOffset().y);
-	var viewportHeight = parseInt(getWindowViewport().height);
 	var leftOffsetTop = parseInt(getElementOffsetTop(left));
 	var rightBoxOffsetTop = parseInt(getElementOffsetTop(right));
 	var rightBoxMarginTop = parseInt(right.style.marginTop.match(/\d+/));
@@ -88,6 +88,11 @@ var rightFloat = function(){
 
 	var startFloatDownVal = pageScrollTop + viewportHeight 
 		- rightOriginOffsetTop - rightHeight;
+
+	if(rightHeight<viewportHeight){
+		startFloatDownVal = pageScrollTop - rightOriginOffsetTop;
+	}
+
 	if(startFloatDownVal >= 0){
 		if(rightBoxMarginTop >= startFloatDownVal){
 			if(rightBoxOffsetTop > pageScrollTop && rightBoxOffsetTop > rightOriginOffsetTop){
