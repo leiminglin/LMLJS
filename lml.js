@@ -59,7 +59,7 @@
 	}
 
 	function getViewport(){
-		if( doc.compatMode && doc.compatMode == "BackCompat" ){
+		if( doc.compatMode && doc.compatMode == "BackCompat" && doc.body){
 			return { width : doc.body.clientWidth, 
 				height : doc.body.clientHeight }
 		}else{
