@@ -11,16 +11,21 @@
  */
 (function(win, doc, undf){
 
-	var deferred = {};
-	deferred.queue = [];
-	deferred.promise = function(){
-		if( deferred.queue.length ){
-			deferred.queue.shift()();
-		}
+	var createDeferred = function(){
+		var deferred = {};
+		deferred.queue = [];
+		deferred.promise = function(){
+			if( deferred.queue.length ){
+				deferred.queue.shift()();
+			}
+		};
+		deferred.then = function(e){
+			deferred.queue.push(e);
+		};
+		return deferred;
 	};
-	deferred.then = function(e){
-		deferred.queue.push(e);
-	};
+
+	var deferred = createDeferred();
 
 	function getElementViewTop(element){
 		var actualTop = element.offsetTop
@@ -194,6 +199,7 @@
 
 	var lml = {};
 	lml.deferred = deferred;
+	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
 	win.lml = lml;
 	
