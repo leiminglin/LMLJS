@@ -35,10 +35,9 @@
 		function withJs(js, callback){
 			var cb = function(){
 				if(loadedJs[js].loaded){
-					console.log('load');
 					callback();
+					loadedJs[js].callback.promise();
 				}else{
-					console.log('unload');
 					loadJs(js, function(){
 						callback();
 						loadedJs[js].loaded = true;
