@@ -27,6 +27,50 @@
 
 	var deferred = createDeferred();
 
+
+	function createWithJs(){
+
+		var loadedJs = {};
+
+		function withJs(js, callback){
+			var cb = function(){
+				if(loadedJs[js].loaded){
+					console.log('load');
+					callback();
+				}else{
+					console.log('unload');
+					loadJs(js, function(){
+						callback();
+						loadedJs[js].loaded = true;
+						loadedJs[js].callback.promise();
+					});
+				}
+			};
+			if(!loadedJs[js]){
+				var def = createDeferred();
+				def.then(cb);
+				loadedJs[js] = {
+					'loaded': false,
+					'callback': def
+				};
+			}else{
+				loadedJs[js].callback.then(cb);
+			}
+		}
+
+		withJs.start = function(){
+			for(var i in loadedJs){
+				loadedJs[i].callback.promise();
+			}
+		};
+
+		return withJs;
+	}
+
+	var withJs = createWithJs();
+
+
+
 	function getElementViewTop(element){
 		var actualTop = element.offsetTop
 			,offsetParentElement = element.offsetParent;
@@ -201,6 +245,12 @@
 	lml.deferred = deferred;
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
+	lml.withJs = withJs;
+	lml.run = function(){
+		deferred.promise();
+		withJs.start();
+	};
+
 	win.lml = lml;
 	
 })(window, document);
