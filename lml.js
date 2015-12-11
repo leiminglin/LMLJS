@@ -57,8 +57,27 @@
 			}
 		};
 
+		function seqLoad(jsArr, callback, isForceAppend){
+			function loop(){
+				var js = jsArr.shift(), nextJs = jsArr.shift();
+				jsArr.unshift(nextJs);
+				withJs(js, function(){
+					if(nextJs){
+						loop();
+						loadedJs[nextJs].callback.promise();
+					}else{
+						callback();
+					}
+				}, isForceAppend);
+			}
+			loop();
+		}
+
 
 		function withJs(js, callback, isForceAppend){
+			if(typeof js == 'object' && js instanceof Array){
+				return seqLoad(js, callback);
+			}
 			callback = callback || function(){
 				deferred.promise();
 			};
