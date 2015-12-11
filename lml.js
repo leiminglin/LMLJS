@@ -39,9 +39,6 @@
 			script.src = src;
 			try{
 				stag.parentNode.insertBefore( script, stag );
-				callback = callback || function(){
-					deferred.promise();
-				};
 				if( window.addEventListener ){
 					script.addEventListener( 'load', callback, false );
 				}else if( window.attachEvent ){
@@ -62,6 +59,9 @@
 
 
 		function withJs(js, callback, isForceAppend){
+			callback = callback || function(){
+				deferred.promise();
+			};
 			var cb = function(){
 				if(!loadedJs[js].loaded || isForceAppend+'' == '1'){
 					loadJs(js, function(){
