@@ -64,7 +64,10 @@
 				withJs(js, function(){
 					if(nextJs){
 						loop();
-						loadedJs[nextJs].callback.promise();
+						if(!loadedJs[nextJs].callback.isRun){
+							loadedJs[nextJs].callback.isRun = 1;
+							loadedJs[nextJs].callback.promise();
+						}
 					}else{
 						callback();
 					}
@@ -84,8 +87,8 @@
 			var cb = function(){
 				if(!loadedJs[js].loaded || isForceAppend+'' == '1'){
 					loadJs(js, function(){
-						callback();
 						loadedJs[js].loaded = true;
+						callback();
 						loadedJs[js].callback.promise();
 					});
 				}else{
