@@ -93,11 +93,11 @@
 			};
 			var cb = function(){
 				isForceAppend = isForceAppend+'' == '1' ? true : false;
-				var to_load = loadJs(js, function(){
+				var to_load = function(){loadJs(js, function(){
 					neededJs[js].loaded = true;
 					callback();
 					withJs.start(js);
-				});
+				})};
 				if(isForceAppend){
 					to_load();
 				}else{
@@ -122,7 +122,7 @@
 				neededJs[js].callback.then(cb);
 			}
 			if(!neededJs[js].callback.running){
-				withJs.start(firstJs);
+				withJs.start(js);
 			}
 		}
 
