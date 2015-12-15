@@ -127,6 +127,9 @@
 		}
 
 		withJs.start = function(js){
+			if(!lml.onload){
+				return;
+			}
 			if(js){
 				neededJs[js].callback.promise();
 			}else{
@@ -290,7 +293,9 @@
 	lml.deferred = deferred;
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
+	lml.onload = false;
 	lml.run = function(){
+		lml.onload = true;
 		deferred.promise();
 		loadJs.start();
 	};
