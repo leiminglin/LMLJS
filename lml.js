@@ -30,7 +30,7 @@
 
 	function createWithJs(){
 
-		var loadedJs = {};
+		var neededJs = {};
 
 		function loadJs( src, callback, script, stag ) {
 			script = doc.createElement('script'),
@@ -64,9 +64,9 @@
 				withJs(js, function(){
 					if(nextJs){
 						loop();
-						if(!loadedJs[nextJs].callback.isRun){
-							loadedJs[nextJs].callback.isRun = 1;
-							loadedJs[nextJs].callback.promise();
+						if(!neededJs[nextJs].callback.isRun){
+							neededJs[nextJs].callback.isRun = 1;
+							neededJs[nextJs].callback.promise();
 						}
 					}else{
 						callback();
@@ -85,32 +85,40 @@
 				deferred.promise();
 			};
 			var cb = function(){
-				if(!loadedJs[js].loaded || isForceAppend+'' == '1'){
-					loadJs(js, function(){
-						loadedJs[js].loaded = true;
-						callback();
-						loadedJs[js].callback.promise();
-					});
-				}else{
+				isForceAppend = isForceAppend+'' == '1' ? true : false;
+				var to_load = loadJs(js, function(){
+					neededJs[js].loaded = true;
 					callback();
-					loadedJs[js].callback.promise();
+					neededJs[js].callback.promise();
+				});
+				if(isForceAppend){
+					to_load();
+				}else{
+					if(neededJs[js].start || neededJs[js].loaded){
+						callback();
+						neededJs[js].callback.promise();
+					}else{
+						to_load();
+					}
 				}
+				neededJs[js].start = true;
 			};
-			if(!loadedJs[js]){
+			if(!neededJs[js]){
 				var def = createDeferred();
 				def.then(cb);
-				loadedJs[js] = {
+				neededJs[js] = {
 					'loaded': false,
+					'start': false,
 					'callback': def
 				};
 			}else{
-				loadedJs[js].callback.then(cb);
+				neededJs[js].callback.then(cb);
 			}
 		}
 
 		withJs.start = function(){
-			for(var i in loadedJs){
-				loadedJs[i].callback.promise();
+			for(var i in neededJs){
+				neededJs[i].callback.promise();
 			}
 		};
 
