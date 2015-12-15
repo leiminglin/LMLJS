@@ -62,15 +62,15 @@
 		};
 
 		function seqLoad(jsArr, callback, isForceAppend){
+			var firstJs = jsArr[0];
 			function loop(){
 				var js = jsArr.shift(), nextJs = jsArr.shift();
 				jsArr.unshift(nextJs);
 				withJs(js, function(){
 					if(nextJs){
 						loop();
-						if(!neededJs[nextJs].callback.isRun){
-							neededJs[nextJs].callback.isRun = 1;
-							neededJs[nextJs].callback.promise();
+						if(!neededJs[nextJs].callback.running){
+							withJs.start(nextJs);
 						}
 					}else{
 						callback();
@@ -78,6 +78,9 @@
 				}, isForceAppend);
 			}
 			loop();
+			if(!neededJs[firstJs].callback.running){
+				withJs.start(firstJs);
+			}
 		}
 
 
@@ -93,14 +96,14 @@
 				var to_load = loadJs(js, function(){
 					neededJs[js].loaded = true;
 					callback();
-					neededJs[js].callback.promise();
+					withJs.start(js);
 				});
 				if(isForceAppend){
 					to_load();
 				}else{
 					if(neededJs[js].start || neededJs[js].loaded){
 						callback();
-						neededJs[js].callback.promise();
+						withJs.start(js);
 					}else{
 						to_load();
 					}
@@ -118,12 +121,20 @@
 			}else{
 				neededJs[js].callback.then(cb);
 			}
+			if(!neededJs[js].callback.running){
+				withJs.start(firstJs);
+			}
 		}
 
-		withJs.start = function(){
-			for(var i in neededJs){
-				neededJs[i].callback.promise();
+		withJs.start = function(js){
+			if(js){
+				neededJs[js].callback.promise();
+			}else{
+				for(var i in neededJs){
+					neededJs[i].callback.promise();
+				}
 			}
+
 		};
 
 		return withJs;
