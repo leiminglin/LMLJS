@@ -14,9 +14,13 @@
 	var createDeferred = function(){
 		var deferred = {};
 		deferred.queue = [];
+		deferred.running = false;
 		deferred.promise = function(){
 			if( deferred.queue.length ){
+				deferred.running = true;
 				deferred.queue.shift()();
+			}else{
+				deferred.running = false;
 			}
 		};
 		deferred.then = function(e){
