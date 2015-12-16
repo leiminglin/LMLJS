@@ -43,9 +43,9 @@
 			script.src = src;
 			try{
 				stag.parentNode.insertBefore( script, stag );
-				if( window.addEventListener ){
+				if( win.addEventListener ){
 					script.addEventListener( 'load', callback, false );
-				}else if( window.attachEvent ){
+				}else if( win.attachEvent ){
 					script.onreadystatechange = function(){
 						if(this.readyState.match(/loaded|complete/i)){
 							callback();
@@ -191,16 +191,16 @@
 	deferred.then(function(){
 		var i, length, src, m = doc.getElementsByTagName('IMG'),
 			viewport=getViewport(), count=0;
-		window.onresize = function(){
+		win.onresize = function(){
 			viewport = getViewport();
 		};
 		var loadImg = function(){
 			if( count >= m.length ){
 				/* remove event */
-				if( window.addEventListener ){
+				if( win.addEventListener ){
 					doc.removeEventListener( 'scroll', loadImg, false );
-				}else if( window.attachEvent ){
-					window.detachEvent(event, loadImg);
+				}else if( win.attachEvent ){
+					win.detachEvent(event, loadImg);
 				}
 				return;
 			}
@@ -226,10 +226,10 @@
 			}
 		};
 
-		if( window.addEventListener ){
+		if( win.addEventListener ){
 			doc.addEventListener( 'scroll', loadImg, false );
-		}else if( window.attachEvent ){
-			window.attachEvent("onscroll", loadImg);
+		}else if( win.attachEvent ){
+			win.attachEvent("onscroll", loadImg);
 		}
 		loadImg();
 		deferred.promise();
