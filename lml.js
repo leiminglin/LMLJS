@@ -78,9 +78,6 @@
 				}, isForceAppend);
 			}
 			loop();
-			if(!neededJs[firstJs].callback.running){
-				withJs.start(firstJs);
-			}
 		}
 
 
