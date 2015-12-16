@@ -81,6 +81,20 @@
 		}
 
 
+		function competeLoad(jsArr, callback, isForceAppend){
+			for(var i=0, j=jsArr.length; i<j; i++){
+				withJs(jsArr.shift(), function(){
+					if(this.flag){
+						return;
+					}else{
+						callback();
+						this.flag = 1;
+					}
+				});
+			}
+		}
+
+
 		function withJs(js, callback, isForceAppend){
 			if(typeof js == 'object' && js instanceof Array){
 				return seqLoad(js, callback);
