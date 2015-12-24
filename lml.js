@@ -296,11 +296,14 @@
 	/**
 	 * Lazy load HTML
 	 */
-	deferred.then( function(){
-		var e = doc.getElementsByClassName('lazyHtml');
-		for( var i=0; i<e.length; i++ ) {
+	deferred.then(function(){
+		var
+		e = doc.getElementsByClassName('lazyHtml'),
+		i, wrapdiv
+		;
+		for (i=0; i<e.length; i++ ) {
 			if(e[i].tagName == 'TEXTAREA'){
-				var wrapdiv = doc.createElement('DIV');
+				wrapdiv = doc.createElement('DIV');
 				wrapdiv.innerHTML = e[i].value;
 				e[i].parentNode.insertBefore(wrapdiv, e[i]);
 			}
