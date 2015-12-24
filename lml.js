@@ -36,7 +36,7 @@
 
 		var neededJs = {};
 
-		function loadJs( src, callback, script, stag ) {
+		function loadJs( src, callback, /**/ script, stag ) {
 			script = doc.createElement('script'),
 			stag = doc.getElementsByTagName('script')[0];
 			script.async = 1;
@@ -61,8 +61,8 @@
 			}
 		};
 
-		function seqLoad(jsArr, callback, isForceAppend){
-			var firstJs = jsArr[0];
+		function seqLoad(jsArr, callback, isForceAppend, /**/ firstJs) {
+			firstJs = jsArr[0];
 			function loop(){
 				var js = jsArr.shift(), nextJs = jsArr.shift();
 				jsArr.unshift(nextJs);
