@@ -137,14 +137,14 @@
 			}
 		}
 
-		withJs.start = function(js){
+		withJs.start = function(js, /**/ i){
 			if(!lml.onload){
 				return;
 			}
 			if(js){
 				neededJs[js].callback.promise();
 			}else{
-				for(var i in neededJs){
+				for(i in neededJs){
 					neededJs[i].callback.promise();
 				}
 			}
