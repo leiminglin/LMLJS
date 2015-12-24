@@ -208,7 +208,7 @@
 		win.onresize = function(){
 			viewport = getViewport();
 		};
-		var loadImg = function(){
+		function loadImg() {
 			if( count >= m.length ){
 				/* remove event */
 				if( win.addEventListener ){
