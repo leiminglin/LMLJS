@@ -29,7 +29,11 @@
 		return deferred;
 	};
 
-	var deferred = createDeferred();
+	var
+	deferred = createDeferred(),
+	loadJs = createWithJs(),
+	lml = {}
+	;
 
 
 	function createWithJs(/**/ neededJs){
@@ -154,7 +158,6 @@
 		return withJs;
 	}
 
-	var loadJs = createWithJs();
 
 
 
@@ -311,7 +314,6 @@
 		deferred.promise();
 	});
 
-	var lml = {};
 	lml.deferred = deferred;
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
