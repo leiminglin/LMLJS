@@ -32,9 +32,9 @@
 	var deferred = createDeferred();
 
 
-	function createWithJs(){
+	function createWithJs(/**/ neededJs){
 
-		var neededJs = {};
+		neededJs = {};
 
 		function loadJs( src, callback, /**/ script, stag ) {
 			script = doc.createElement('script'),
