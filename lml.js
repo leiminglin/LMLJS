@@ -271,8 +271,8 @@
 		}
 	}
 
-	function addLazyCss(css) {
-		var style = doc.createElement('style');
+	function addLazyCss(css, /**/ style) {
+		style = doc.createElement('style');
 		style.type='text/css';
 		if (style.styleSheet) {
 			style.styleSheet.cssText = css;
