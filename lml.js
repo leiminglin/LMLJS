@@ -81,8 +81,8 @@
 		}
 
 
-		withJs.competeLoad = function(jsArr, callback, isForceAppend){
-			for(var i=0, j=jsArr.length; i<j; i++){
+		withJs.competeLoad = function(jsArr, callback, isForceAppend, /**/ i, j) {
+			for(i=0, j=jsArr.length; i<j; i++){
 				withJs(jsArr.shift(), function(){
 					if(this.flag){
 						return;
