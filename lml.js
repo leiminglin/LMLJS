@@ -95,7 +95,7 @@
 		}
 
 
-		function withJs(js, callback, isForceAppend){
+		function withJs(js, callback, isForceAppend, /**/ def){
 			if(typeof js == 'object' && js instanceof Array){
 				return seqLoad(js, callback);
 			}
@@ -122,7 +122,7 @@
 				neededJs[js].start = true;
 			};
 			if(!neededJs[js]){
-				var def = createDeferred();
+				def = createDeferred();
 				def.then(cb);
 				neededJs[js] = {
 					'loaded': false,
