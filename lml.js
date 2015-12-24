@@ -159,11 +159,15 @@
 
 
 	function getElementViewTop(element){
-		var actualTop = element.offsetTop
-			,offsetParentElement = element.offsetParent;
+		var
+		actualTop = element.offsetTop
+		,offsetParentElement = element.offsetParent
+		,parentNode
+		,pageScrollTop
+		;
 		if( offsetParentElement == null && element.parentNode ){
 			/* when style display is none */
-			var parentNode = element.parentNode;
+			parentNode = element.parentNode;
 			while( offsetParentElement == null ){
 				offsetParentElement = parentNode.offsetParent;
 				parentNode = parentNode.parentNode;
@@ -177,7 +181,6 @@
 			offsetParentElement = offsetParentElement.offsetParent;
 		}
 
-		var pageScrollTop;
 		if ( typeof win.pageYOffset === 'number' ) {
 			pageScrollTop = win.pageYOffset;
 		} else {
