@@ -102,9 +102,9 @@
 			callback = callback || function(){
 				deferred.promise();
 			};
-			var cb = function(/**/ to_load) {
+			var cb = function() {
 				isForceAppend = isForceAppend+'' == '1' ? true : false;
-				to_load = function(){loadJs(js, function(){
+				function to_load(){loadJs(js, function(){
 					neededJs[js].loaded = true;
 					callback();
 					withJs.start(js);
