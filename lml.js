@@ -11,7 +11,7 @@
  */
 (function(win, doc, undf){
 
-	var createDeferred = function(){
+	function createDeferred() {
 		var deferred = {};
 		deferred.queue = [];
 		deferred.running = false;
@@ -263,7 +263,7 @@
 		}
 	}
 
-	var addLazyCss = function( css ) {
+	function addLazyCss(css) {
 		var style = doc.createElement('style');
 		style.type='text/css';
 		if (style.styleSheet) {
