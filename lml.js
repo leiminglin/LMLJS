@@ -11,8 +11,8 @@
  */
 (function(win, doc, undf){
 
-	function createDeferred() {
-		var deferred = {};
+	function createDeferred(/**/ deferred) {
+		deferred = {};
 		deferred.queue = [];
 		deferred.running = false;
 		deferred.promise = function(){
