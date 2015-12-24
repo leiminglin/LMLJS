@@ -285,9 +285,9 @@
 	/**
 	 * Lazy load CSS
 	 */
-	deferred.then( function(){
-		var e = doc.getElementsByClassName('lazyCss');
-		for( var i=0; i<e.length; i++ ) {
+	deferred.then(function(/**/ e, i){
+		e = doc.getElementsByClassName('lazyCss');
+		for (i=0; i<e.length; i++) {
 			addLazyCss( e[i].value || e[i].innerHTML );
 		}
 		deferred.promise();
