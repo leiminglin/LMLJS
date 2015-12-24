@@ -206,8 +206,10 @@
 	 * Lazy load img
 	 */
 	deferred.then(function(){
-		var i, length, src, m = doc.getElementsByTagName('IMG'),
-			viewport=getViewport(), count=0;
+		var
+		i, length, src, m = doc.getElementsByTagName('IMG'),
+		viewport=getViewport(), count=0, viewtop, imgHeight
+		;
 		win.onresize = function(){
 			viewport = getViewport();
 		};
@@ -225,8 +227,8 @@
 				if( m[i].getAttribute('src') ){
 					continue;
 				}
-				var viewtop = getElementViewTop(m[i])
-					,imgHeight = m[i].getAttribute('height')||0;
+				viewtop = getElementViewTop(m[i]);
+				imgHeight = m[i].getAttribute('height')||0;
 				if( viewtop>=-imgHeight && viewtop < viewport.height
 					&& (src=m[i].getAttribute('osrc')) ){
 					m[i].setAttribute('src',src);
