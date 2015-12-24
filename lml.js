@@ -63,8 +63,8 @@
 
 		function seqLoad(jsArr, callback, isForceAppend, /**/ firstJs) {
 			firstJs = jsArr[0];
-			function loop(){
-				var js = jsArr.shift(), nextJs = jsArr.shift();
+			function loop(/**/ js, nextJs){
+				js = jsArr.shift(), nextJs = jsArr.shift();
 				jsArr.unshift(nextJs);
 				withJs(js, function(){
 					if(nextJs){
