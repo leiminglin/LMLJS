@@ -255,11 +255,14 @@
 	});
 
 	if( typeof doc.getElementsByClassName != 'function' ){
-		doc.getElementsByClassName = function( classname ){
-			var d = doc, e = d.getElementsByTagName('*'),
-				c = new RegExp('\\b'+classname+'\\b'), r = [];
-			for( var i=0,l=e.length; i<l; i++ ){
-				var classname = e[i].className;
+		doc.getElementsByClassName = function (classname) {
+			var
+			e = doc.getElementsByTagName('*'),
+			c = new RegExp('\\b'+classname+'\\b'),
+			r = [], i, l, classname
+			;
+			for (i=0, l=e.length; i<l; i++) {
+				classname = e[i].className;
 				if( c.test(classname) ){
 					r.push( e[i] );
 				}
