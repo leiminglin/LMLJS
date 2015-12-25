@@ -14,13 +14,13 @@
 	function createDeferred(/**/ deferred) {
 		deferred = {};
 		deferred.queue = [];
-		deferred.running = false;
+		deferred.running = 0;
 		deferred.promise = function(){
 			if( deferred.queue.length ){
-				deferred.running = true;
+				deferred.running = 1;
 				deferred.queue.shift()();
 			}else{
-				deferred.running = false;
+				deferred.running = 0;
 			}
 		};
 		deferred.then = function(e){
@@ -107,9 +107,9 @@
 				deferred.promise();
 			};
 			function cb() {
-				isForceAppend = isForceAppend+'' == '1' ? true : false;
+				isForceAppend = isForceAppend+'' == '1' ? 1 : 0;
 				function to_load(){loadJs(js, function(){
-					neededJs[js].loaded = true;
+					neededJs[js].loaded = 1;
 					callback();
 					withJs.start(js);
 				})};
@@ -123,14 +123,14 @@
 						to_load();
 					}
 				}
-				neededJs[js].start = true;
+				neededJs[js].start = 1;
 			};
 			if(!neededJs[js]){
 				def = createDeferred();
 				def.then(cb);
 				neededJs[js] = {
-					'loaded': false,
-					'start': false,
+					'loaded': 0,
+					'start': 0,
 					'callback': def
 				};
 			}else{
@@ -317,9 +317,9 @@
 	lml.deferred = deferred;
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
-	lml.onload = false;
+	lml.onload = 0;
 	lml.run = function(){
-		lml.onload = true;
+		lml.onload = 1;
 		deferred.promise();
 		loadJs.start();
 	};
