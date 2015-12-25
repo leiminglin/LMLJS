@@ -11,16 +11,16 @@
  */
 (function(win, doc, undf){
 
-	var createDeferred = function(){
-		var deferred = {};
+	function createDeferred(/**/ deferred) {
+		deferred = {};
 		deferred.queue = [];
-		deferred.running = false;
+		deferred.running = 0;
 		deferred.promise = function(){
 			if( deferred.queue.length ){
-				deferred.running = true;
+				deferred.running = 1;
 				deferred.queue.shift()();
 			}else{
-				deferred.running = false;
+				deferred.running = 0;
 			}
 		};
 		deferred.then = function(e){
@@ -29,14 +29,18 @@
 		return deferred;
 	};
 
-	var deferred = createDeferred();
+	var
+	deferred = createDeferred(),
+	loadJs = createWithJs(),
+	lml = {}
+	;
 
 
-	function createWithJs(){
+	function createWithJs(/**/ neededJs){
 
-		var neededJs = {};
+		neededJs = {};
 
-		function loadJs( src, callback, script, stag ) {
+		function loadJs( src, callback, /**/ script, stag ) {
 			script = doc.createElement('script'),
 			stag = doc.getElementsByTagName('script')[0];
 			script.async = 1;
@@ -61,10 +65,10 @@
 			}
 		};
 
-		function seqLoad(jsArr, callback, isForceAppend){
-			var firstJs = jsArr[0];
-			function loop(){
-				var js = jsArr.shift(), nextJs = jsArr.shift();
+		function seqLoad(jsArr, callback, isForceAppend, /**/ firstJs) {
+			firstJs = jsArr[0];
+			function loop(/**/ js, nextJs){
+				js = jsArr.shift(), nextJs = jsArr.shift();
 				jsArr.unshift(nextJs);
 				withJs(js, function(){
 					if(nextJs){
@@ -81,8 +85,8 @@
 		}
 
 
-		withJs.competeLoad = function(jsArr, callback, isForceAppend){
-			for(var i=0, j=jsArr.length; i<j; i++){
+		withJs.competeLoad = function(jsArr, callback, isForceAppend, /**/ i, j) {
+			for(i=0, j=jsArr.length; i<j; i++){
 				withJs(jsArr.shift(), function(){
 					if(this.flag){
 						return;
@@ -95,17 +99,17 @@
 		}
 
 
-		function withJs(js, callback, isForceAppend){
+		function withJs(js, callback, isForceAppend, /**/ def){
 			if(typeof js == 'object' && js instanceof Array){
 				return seqLoad(js, callback);
 			}
 			callback = callback || function(){
 				deferred.promise();
 			};
-			var cb = function(){
-				isForceAppend = isForceAppend+'' == '1' ? true : false;
-				var to_load = function(){loadJs(js, function(){
-					neededJs[js].loaded = true;
+			function cb() {
+				isForceAppend = isForceAppend+'' == '1' ? 1 : 0;
+				function to_load(){loadJs(js, function(){
+					neededJs[js].loaded = 1;
 					callback();
 					withJs.start(js);
 				})};
@@ -119,14 +123,14 @@
 						to_load();
 					}
 				}
-				neededJs[js].start = true;
+				neededJs[js].start = 1;
 			};
 			if(!neededJs[js]){
-				var def = createDeferred();
+				def = createDeferred();
 				def.then(cb);
 				neededJs[js] = {
-					'loaded': false,
-					'start': false,
+					'loaded': 0,
+					'start': 0,
 					'callback': def
 				};
 			}else{
@@ -137,14 +141,14 @@
 			}
 		}
 
-		withJs.start = function(js){
+		withJs.start = function(js, /**/ i){
 			if(!lml.onload){
 				return;
 			}
 			if(js){
 				neededJs[js].callback.promise();
 			}else{
-				for(var i in neededJs){
+				for(i in neededJs){
 					neededJs[i].callback.promise();
 				}
 			}
@@ -154,16 +158,19 @@
 		return withJs;
 	}
 
-	var loadJs = createWithJs();
 
 
 
 	function getElementViewTop(element){
-		var actualTop = element.offsetTop
-			,offsetParentElement = element.offsetParent;
+		var
+		actualTop = element.offsetTop
+		,offsetParentElement = element.offsetParent
+		,parentNode
+		,pageScrollTop
+		;
 		if( offsetParentElement == null && element.parentNode ){
 			/* when style display is none */
-			var parentNode = element.parentNode;
+			parentNode = element.parentNode;
 			while( offsetParentElement == null ){
 				offsetParentElement = parentNode.offsetParent;
 				parentNode = parentNode.parentNode;
@@ -177,7 +184,6 @@
 			offsetParentElement = offsetParentElement.offsetParent;
 		}
 
-		var pageScrollTop;
 		if ( typeof win.pageYOffset === 'number' ) {
 			pageScrollTop = win.pageYOffset;
 		} else {
@@ -203,12 +209,14 @@
 	 * Lazy load img
 	 */
 	deferred.then(function(){
-		var i, length, src, m = doc.getElementsByTagName('IMG'),
-			viewport=getViewport(), count=0;
+		var
+		i, length, src, m = doc.getElementsByTagName('IMG'),
+		viewport=getViewport(), count=0, viewtop, imgHeight
+		;
 		win.onresize = function(){
 			viewport = getViewport();
 		};
-		var loadImg = function(){
+		function loadImg() {
 			if( count >= m.length ){
 				/* remove event */
 				if( win.addEventListener ){
@@ -222,8 +230,8 @@
 				if( m[i].getAttribute('src') ){
 					continue;
 				}
-				var viewtop = getElementViewTop(m[i])
-					,imgHeight = m[i].getAttribute('height')||0;
+				viewtop = getElementViewTop(m[i]);
+				imgHeight = m[i].getAttribute('height')||0;
 				if( viewtop>=-imgHeight && viewtop < viewport.height
 					&& (src=m[i].getAttribute('osrc')) ){
 					m[i].setAttribute('src',src);
@@ -250,11 +258,14 @@
 	});
 
 	if( typeof doc.getElementsByClassName != 'function' ){
-		doc.getElementsByClassName = function( classname ){
-			var d = doc, e = d.getElementsByTagName('*'),
-				c = new RegExp('\\b'+classname+'\\b'), r = [];
-			for( var i=0,l=e.length; i<l; i++ ){
-				var classname = e[i].className;
+		doc.getElementsByClassName = function (classname) {
+			var
+			e = doc.getElementsByTagName('*'),
+			c = new RegExp('\\b'+classname+'\\b'),
+			r = [], i, l, classname
+			;
+			for (i=0, l=e.length; i<l; i++) {
+				classname = e[i].className;
 				if( c.test(classname) ){
 					r.push( e[i] );
 				}
@@ -263,8 +274,8 @@
 		}
 	}
 
-	var addLazyCss = function( css ) {
-		var style = doc.createElement('style');
+	function addLazyCss(css, /**/ style) {
+		style = doc.createElement('style');
 		style.type='text/css';
 		if (style.styleSheet) {
 			style.styleSheet.cssText = css;
@@ -277,9 +288,9 @@
 	/**
 	 * Lazy load CSS
 	 */
-	deferred.then( function(){
-		var e = doc.getElementsByClassName('lazyCss');
-		for( var i=0; i<e.length; i++ ) {
+	deferred.then(function(/**/ e, i){
+		e = doc.getElementsByClassName('lazyCss');
+		for (i=0; i<e.length; i++) {
 			addLazyCss( e[i].value || e[i].innerHTML );
 		}
 		deferred.promise();
@@ -288,11 +299,14 @@
 	/**
 	 * Lazy load HTML
 	 */
-	deferred.then( function(){
-		var e = doc.getElementsByClassName('lazyHtml');
-		for( var i=0; i<e.length; i++ ) {
+	deferred.then(function(){
+		var
+		e = doc.getElementsByClassName('lazyHtml'),
+		i, wrapdiv
+		;
+		for (i=0; i<e.length; i++ ) {
 			if(e[i].tagName == 'TEXTAREA'){
-				var wrapdiv = doc.createElement('DIV');
+				wrapdiv = doc.createElement('DIV');
 				wrapdiv.innerHTML = e[i].value;
 				e[i].parentNode.insertBefore(wrapdiv, e[i]);
 			}
@@ -300,13 +314,12 @@
 		deferred.promise();
 	});
 
-	var lml = {};
 	lml.deferred = deferred;
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
-	lml.onload = false;
+	lml.onload = 0;
 	lml.run = function(){
-		lml.onload = true;
+		lml.onload = 1;
 		deferred.promise();
 		loadJs.start();
 	};
