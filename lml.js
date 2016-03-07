@@ -35,6 +35,20 @@
 	lml = {}
 	;
 
+	function createRegisterOnResize(){
+		var needDo = [];
+		function t(func){
+			needDo.push(func);
+			win.onresize = function(){
+				for(var i in needDo){
+					needDo[i]();
+				}
+			};
+		};
+		return t;
+	};
+
+	lml.registerOnResize = createRegisterOnResize();
 
 	function createWithJs(/**/ neededJs){
 
@@ -96,7 +110,7 @@
 					}
 				});
 			}
-		}
+		};
 
 
 		function withJs(js, callback, isForceAppend, /**/ def){
@@ -213,9 +227,9 @@
 		i, length, src, m = doc.getElementsByTagName('IMG'),
 		viewport=getViewport(), count=0, viewtop, imgHeight
 		;
-		win.onresize = function(){
+		lml.registerOnResize(function(){
 			viewport = getViewport();
-		};
+		});
 		function loadImg() {
 			if( count >= m.length ){
 				/* remove event */
