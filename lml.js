@@ -99,16 +99,16 @@
 		}
 
 
-		withJs.competeLoad = function(jsArr, callback, isForceAppend, /**/ i, j) {
+		withJs.competeLoad = function(jsArr, callback, noConflictCallBack, isForceAppend,/**/ i, j) {
 			for(i=0, j=jsArr.length; i<j; i++){
 				withJs(jsArr.shift(), function(){
 					if(this.flag){
-						return;
+						return noConflictCallBack();
 					}else{
 						callback();
 						this.flag = 1;
 					}
-				});
+				}, isForceAppend);
 			}
 		};
 
