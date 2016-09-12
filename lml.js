@@ -193,7 +193,7 @@
 				}
 			}
 		}
-		while ( offsetParentElement !== null /* document.body */ ){
+		while ( offsetParentElement /* document.body */ ){
 			actualTop += (offsetParentElement.offsetTop+offsetParentElement.clientTop);
 			offsetParentElement = offsetParentElement.offsetParent;
 		}
