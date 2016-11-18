@@ -26,11 +26,13 @@
 		deferred.then = function(e){
 			deferred.queue.push(e);
 		};
+		deferred.front = function(e){
+			deferred.queue.unshift(e);
+		};
 		return deferred;
 	};
 
-	var
-	deferred = createDeferred(),
+	var deferred = createDeferred(),
 	loadJs = createWithJs(),
 	lml = {}
 	;
