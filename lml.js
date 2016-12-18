@@ -178,8 +178,7 @@
 
 
 	function getElementViewTop(element){
-		var
-		actualTop = element.offsetTop
+		var actualTop = element.offsetTop
 		,offsetParentElement = element.offsetParent
 		,parentNode
 		,pageScrollTop
@@ -225,8 +224,7 @@
 	 * Lazy load img
 	 */
 	deferred.then(function(){
-		var
-		i, length, src, m = doc.getElementsByTagName('IMG'),
+		var i, length, src, m = doc.getElementsByTagName('IMG'),
 		viewport=getViewport(), count=0, viewtop, imgHeight
 		;
 		lml.registerOnResize(function(){
@@ -270,13 +268,22 @@
 			win.attachEvent("onscroll", loadImg);
 		}
 		loadImg();
+		var t=1;
+		var q=function(){
+			loadImg();
+			t*=2;
+			if(t>1e3){
+				t=1e3;
+			}
+			setTimeout(q,t);
+		};
+		setTimeout(q,t);
 		deferred.promise();
 	});
 
 	if( typeof doc.getElementsByClassName != 'function' ){
 		doc.getElementsByClassName = function (classname) {
-			var
-			e = doc.getElementsByTagName('*'),
+			var e = doc.getElementsByTagName('*'),
 			c = new RegExp('\\b'+classname+'\\b'),
 			r = [], i, l, classname
 			;
@@ -316,8 +323,7 @@
 	 * Lazy load HTML
 	 */
 	deferred.then(function(){
-		var
-		e = doc.getElementsByClassName('lazyHtml'),
+		var e = doc.getElementsByClassName('lazyHtml'),
 		i, wrapdiv
 		;
 		for (i=0; i<e.length; i++ ) {
@@ -334,13 +340,20 @@
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
 	lml.onload = 0;
-	lml.run = function(){
+	lml.run = function(){};
+
+	win.lml = lml;
+
+	var oldload=function(){};
+	if(typeof win.onload=='function'){
+		oldload=win.onload;
+	}
+	win.onload=function(){
 		lml.onload = 1;
 		deferred.promise();
 		loadJs.start();
+		oldload();
 	};
-
-	win.lml = lml;
 
 })(window, document);
 
