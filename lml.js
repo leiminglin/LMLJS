@@ -104,11 +104,11 @@
 		withJs.competeLoad = function(jsArr, callback, noConflictCallBack, isForceAppend,/**/ i, j) {
 			for(i=0, j=jsArr.length; i<j; i++){
 				withJs(jsArr.shift(), function(){
-					if(this.flag){
+					if(callback.flag){
 						return noConflictCallBack();
 					}else{
 						callback();
-						this.flag = 1;
+						callback.flag = 1;
 					}
 				}, isForceAppend);
 			}
@@ -336,24 +336,26 @@
 		deferred.promise();
 	});
 
-	lml.deferred = deferred;
-	lml.createDeferred = createDeferred;
-	lml.loadJs = loadJs;
-	lml.onload = 0;
-	lml.run = function(){};
-
-	win.lml = lml;
-
 	var oldload=function(){};
 	if(typeof win.onload=='function'){
 		oldload=win.onload;
 	}
-	win.onload=function(){
+	lml.deferred = deferred;
+	lml.createDeferred = createDeferred;
+	lml.loadJs = loadJs;
+	lml.onload = 0;
+	lml.run = function(){
+		if(lml.onload){
+			return;
+		}
 		lml.onload = 1;
 		deferred.promise();
 		loadJs.start();
 		oldload();
 	};
+
+	win.lml = lml;
+	win.onload=lml.run;
 
 })(window, document);
 
