@@ -308,6 +308,33 @@
 		doc.getElementsByTagName('head')[0].appendChild(style);
 	};
 
+	function loadCss( href, /**/ callback, link, stag ) {
+		link = doc.createElement('link'),
+			 stag = doc.getElementsByTagName('script')[0]
+			 callback=callback||function(){};
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = href;
+		try{
+			stag.parentNode.insertBefore( link, stag );
+			if( win.addEventListener ){
+				link.addEventListener( 'load', callback, false );
+			}else if( win.attachEvent ){
+				link.onreadystatechange = function(){
+					if(this.readyState.match(/loaded|complete/i)){
+						callback();
+					}
+				}
+			}else{
+				link.onload = function(){
+					callback();
+				}
+			}
+		}catch(e){
+			callback();
+		}
+	};
+
 	/**
 	 * Lazy load CSS
 	 */
@@ -343,6 +370,7 @@
 	lml.deferred = deferred;
 	lml.createDeferred = createDeferred;
 	lml.loadJs = loadJs;
+	lml.loadCss = loadCss;
 	lml.onload = 0;
 	lml.run = function(){
 		if(lml.onload){
