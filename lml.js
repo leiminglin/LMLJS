@@ -230,36 +230,57 @@
 		lml.registerOnResize(function(){
 			viewport = getViewport();
 		});
+
+		var loadImgTimer;
+		var defLoadImgTimer;
+		var arrImg = [];
 		function loadImg() {
-			if( count >= m.length ){
-				/* remove event */
-				if( win.addEventListener ){
-					doc.removeEventListener( 'scroll', loadImg, false );
-				}else if( win.attachEvent ){
-					win.detachEvent(event, loadImg);
+			clearTimeout(loadImgTimer);
+			clearTimeout(defLoadImgTimer);
+			loadImgTimer = setTimeout(function(){
+				if( count >= m.length ){
+					/* remove event */
+					if( win.addEventListener ){
+						doc.removeEventListener( 'scroll', loadImg, false );
+					}else if( win.attachEvent ){
+						win.detachEvent(event, loadImg);
+					}
+					return;
 				}
-				return;
-			}
-			for(i=0,j=m.length; i<j; i++){
-				if( m[i].getAttribute('src') ){
-					continue;
-				}
-				viewtop = getElementViewTop(m[i]);
-				imgHeight = m[i].getAttribute('height')||0;
-				if( viewtop>=-imgHeight && viewtop < viewport.height
-					&& (src=m[i].getAttribute('osrc')) ){
-					m[i].setAttribute('src',src);
-					m[i].onerror=function(){
-						if( src=this.getAttribute('osrc-bak') ){
-							this.setAttribute('src',src);
-							this.onerror=null;
+				arrImg = [];
+				for(i=0,j=m.length; i<j; i++){
+					if( m[i].getAttribute('src') ){
+						continue;
+					}
+					viewtop = getElementViewTop(m[i]);
+					imgHeight = m[i].getAttribute('height')||0;
+					if( viewtop>=-imgHeight && viewtop < viewport.height
+						&& (src=m[i].getAttribute('osrc')) ){
+						arrImg.push(m[i]);
+						m[i].onerror=function(){
+							if( src=this.getAttribute('osrc-bak') ){
+								this.setAttribute('src',src);
+								this.onerror=null;
+							}
+						};
+						m[i].onload = function(){
+							count++;
 						}
-					};
-					m[i].onload = function(){
-						count++;
 					}
 				}
-			}
+				defLoadImg();
+			},9);
+		};
+
+		var defLoadImg = function(){
+			defLoadImgTimer = setTimeout(function(){
+				var mx = arrImg.shift();
+				if (!mx) {
+					return;
+				}
+				mx.setAttribute('src', mx.getAttribute('osrc'));
+				defLoadImg();
+			}, lml.config.imgDelay||250);
 		};
 
 		if( win.addEventListener ){
@@ -362,6 +383,12 @@
 		}
 		deferred.promise();
 	});
+
+	lml.config = function(c){
+		for(var i in c){
+			lml.config[i]=c[i];
+		}
+	};
 
 	var oldload=function(){};
 	if(typeof win.onload=='function'){
