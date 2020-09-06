@@ -236,7 +236,6 @@
 		var arrImg = [];
 		function loadImg() {
 			clearTimeout(loadImgTimer);
-			clearTimeout(defLoadImgTimer);
 			loadImgTimer = setTimeout(function(){
 				if( count >= m.length ){
 					/* remove event */
@@ -268,20 +267,33 @@
 						}
 					}
 				}
-				defLoadImg();
 			},9);
 		};
 
+		var timerInterval;
 		var defLoadImg = function(){
+			clearTimeout(defLoadImgTimer);
 			defLoadImgTimer = setTimeout(function(){
 				var mx = arrImg.shift();
 				if (!mx) {
+					defLoadImg();
 					return;
 				}
 				mx.setAttribute('src', mx.getAttribute('osrc'));
-				defLoadImg();
-			}, lml.config.imgDelay||250);
+				var secW=0;
+				timerInterval=setInterval(function(){
+					secW+=9;
+					if (mx.complete) {
+						clearInterval(timerInterval);
+						return defLoadImg();
+					}else if (secW > (lml.config.imgDelay||500)) {
+						clearInterval(timerInterval);
+						return defLoadImg();
+					}
+				},9);
+			}, 9);
 		};
+		defLoadImg();
 
 		if( win.addEventListener ){
 			doc.addEventListener( 'scroll', loadImg, false );
